@@ -1,11 +1,9 @@
 "use client";
 import React, { FC } from "react";
-import { signal } from "@preact/signals";
 import { getArticles, markRelevance, summarizeArticles } from "../lib/openai";
 import OpenAI from "openai";
 type T = any;
 
-const answer = signal("no answer yet");
 //   const articlesS = signal([])
 const form: FC<T> = props => {
   const [loading, setLoading] = React.useState(false);
@@ -87,10 +85,6 @@ const form: FC<T> = props => {
             </div>
           </a>
         ))}
-      </div>
-
-      <div className="bg-white p-4 rounded text-slate-700">
-        <p>{answer.value}</p>
       </div>
     </div>
   );
