@@ -1,12 +1,17 @@
 import axios from "axios";
 import OpenAI from "openai";
+import { streamAsyncIterator } from "./helpers";
 
-const { NEWS_API_KEY, OPENAI_API_KEY, OPENAI_ORG } = process.env;
+const {
+  NEXT_PUBLIC_NEWS_API_KEY,
+  NEXT_PUBLIC_OPENAI_API_KEY,
+  NEXT_PUBLIC_OPENAI_ORG
+} = process.env;
 
 type Article = any;
 const openai = new OpenAI({
-  organization: OPENAI_ORG || "",
-  apiKey: OPENAI_API_KEY || "",
+  organization: NEXT_PUBLIC_OPENAI_ORG || "",
+  apiKey: NEXT_PUBLIC_OPENAI_API_KEY || "",
   dangerouslyAllowBrowser: true
 });
 
@@ -22,13 +27,13 @@ const openai = new OpenAI({
 export const getArticles = async (params: any) => {
   const url =
     "https://newsapi.org/v2/everything?" +
-    `q=${encodeURIComponent(params.q)}&` +
+    `q=${encodeURIComponent(params.query)}&` +
     `from=${params.from}&` +
     "sortBy=popularity&" +
     // `language=${params.language}&` +
-    `apiKey=${NEWS_API_KEY}`;
+    `apiKey=${NEXT_PUBLIC_NEWS_API_KEY || "4f1451abd6014f3e848e9e1141fc3326"}`;
   const response = await axios.get(url);
-  return response.data.articles;
+  return response.data.articles as Article[];
 };
 
 const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
@@ -60,30 +65,25 @@ const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
 
 export const summarizeArticles = async (
   articles: Article[],
-  relevantArticles: any[],
+
   interest: string
 ) => {
-  const toKeep = relevantArticles.map(article => article.id);
-  const articlesShort = articles.filter((article, i) => toKeep.includes(i));
-
-  console.log({ articlesShort });
+  console.log({ summarizing: articles.length });
   const prompt = `
     You are a helping researchers with the distilation of information on a topic of interest.
     The theme of interest is: ${interest}
 
     You are provided with a list of articles. 
-    ${JSON.stringify(articlesShort)}
+    ${JSON.stringify(articles)}
     
     Please summarize the articles keeping the theme of interest in mind and return the summary
 `;
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4-0314",
-    messages: [{ role: "user", content: prompt }],
-    stream: true
-    // tools
+  const response = await fetch("/api/llm", {
+    method: "POST",
+    body: JSON.stringify({ prompt, stream: false })
   });
 
-  return stream;
+  return response.body;
 };
 
 export const markRelevance = async (articles: Article[], interest: string) => {
@@ -94,11 +94,9 @@ export const markRelevance = async (articles: Article[], interest: string) => {
     return;
   }
 
-  console.log(`Found ${articles.length} articles`);
-
   const articlesShort = articles.map((article, i) => ({
     title: article.title,
-    description: article.description,
+    // description: article.description,
     id: i
   }));
 
@@ -116,27 +114,31 @@ export const markRelevance = async (articles: Article[], interest: string) => {
     only use the data provided above, do not use any other data.
     Loop over the articles and execute the following steps
     1. mark the article's relevance to the topic of interest by marking it 1 to 4. 2 being not relevant and 4 being very relevant.
-    2. If the relvance is below 4, remove it from the list.
-    3. Remove all fields except the relevance and the id.
+    2. Explain in 1 sentence the reason you gave the relevance score
+    3. If the relvance is below 4, remove it from the list.
+    4. Remove all fields except the relevance and the id.
 
     When you've looped over all the articles, return the shortened JSON list and nothing else. 
     
-    Don't add any text, just return the JSON list.
-    Ensure that the JSON is always valid before returning it. 
-    Never return invalid JSON.
+    Provide your answer in JSON form. Reply with only the answer in JSON form and include no other commentary:
+
+    here is an example:
+    [{"id": 0, "relevance": 1, "reason": "No relation with the given interest found"}, {"id": 1, "relevance": 4, "reason": "Article title contains the given interest"}]
+
+
+
+    
 
 	`;
-
-  const stream = await openai.chat.completions.create({
-    model: "gpt-4-0314",
-    messages: [{ role: "user", content: prompt }]
-    // stream: true
-    // tools
+  const response = await fetch("/api/llm", {
+    method: "POST",
+    body: JSON.stringify({ prompt, stream: false })
   });
-  console.log({ r: stream.choices[0].message.content || "" });
-  return JSON.parse(stream.choices[0].message.content || "");
 
-  console.log(stream);
-  return stream;
-  // const x = JSON.parse(stream);
+  let str = "";
+  for await (const chunk of streamAsyncIterator(response.body)) {
+    str = str + new TextDecoder().decode(chunk);
+  }
+
+  return str;
 };
