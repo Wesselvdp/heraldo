@@ -1,6 +1,6 @@
 import PocketBase from "pocketbase";
 
-const pb = new PocketBase("http://127.0.0.1:8090");
+export const pb = new PocketBase("http://127.0.0.1:8090");
 
 export const getSubscriptions = async () => {
   const authData = await pb.admins.authWithPassword(
@@ -44,6 +44,8 @@ export const updateSubscription = async (data: Subscription) => {
     "wessel@torgon.io",
     "WaterGate7708!"
   );
+
+  console.log({ saving: data });
 
   const result = await pb.collection("subscriptions").update(data.id, data);
   return result;

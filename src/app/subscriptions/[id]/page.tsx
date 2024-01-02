@@ -11,7 +11,7 @@ type T = any;
 const Page = async ({ params }: { params: { id: string } }) => {
   const subscriptions = await getSubscriptions();
   const subscription = await getSubscription(params.id);
-  console.log({ subscription });
+
   return (
     <Layout>
       <AsideList items={subscriptions as any} />

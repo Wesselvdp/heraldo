@@ -9,7 +9,6 @@ import { createSubscription } from "@/lib/db";
 type T = any;
 const page: NextPage = async props => {
   const subscriptions = await getSubscriptions();
-  console.log({ subscriptions });
   return (
     <Layout>
       <AsideList items={subscriptions as any} />
