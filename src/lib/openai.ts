@@ -3,18 +3,9 @@ import OpenAI from "openai";
 import { streamAsyncIterator } from "./helpers";
 import { getEncoding, encodingForModel } from "js-tiktoken";
 
-const {
-  NEXT_PUBLIC_NEWS_API_KEY,
-  NEXT_PUBLIC_OPENAI_API_KEY,
-  NEXT_PUBLIC_OPENAI_ORG
-} = process.env;
+const {} = process.env;
 
 type Article = any;
-const openai = new OpenAI({
-  organization: NEXT_PUBLIC_OPENAI_ORG || "",
-  apiKey: NEXT_PUBLIC_OPENAI_API_KEY || "",
-  dangerouslyAllowBrowser: true
-});
 
 // function streamToString(stream) {
 //   const chunks = [];
@@ -34,37 +25,10 @@ export const getArticles = async (params: any) => {
     `from=${params.from}&` +
     "sortBy=popularity&" +
     // `language=${params.language}&` +
-    `apiKey=${NEXT_PUBLIC_NEWS_API_KEY || "4f1451abd6014f3e848e9e1141fc3326"}`;
+    `apiKey=4f1451abd6014f3e848e9e1141fc3326`;
   const response = await axios.get(url);
   return response.data.articles as Article[];
 };
-
-const tools: OpenAI.Chat.Completions.ChatCompletionTool[] = [
-  {
-    type: "function",
-    function: {
-      name: "get_summary",
-      description: "summarize articles on a topic",
-      parameters: {
-        type: "object",
-        properties: {
-          articles: {
-            type: "array",
-            description: "articles to summarize",
-            items: {
-              type: "string"
-            }
-          },
-          theme: {
-            type: "string",
-            description: "theme of interest"
-          }
-        },
-        required: ["location"]
-      }
-    }
-  }
-];
 
 export const summarizeArticles = async (
   articles: Article[],
