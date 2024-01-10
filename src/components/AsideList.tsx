@@ -8,6 +8,7 @@ type Item = {
   icon: string;
   name: string;
   href: string;
+  active: boolean;
 };
 type T = {
   items: Item[];
@@ -22,7 +23,7 @@ const AsideList: FC<T> = ({ items }) => {
         <input
           className="w-full bg-white"
           type="text"
-          placeholder="Search..."
+          placeholder="Search subscriptions"
           value={search}
           onChange={e => setSearch(e.target.value)}
         />
@@ -36,7 +37,11 @@ const AsideList: FC<T> = ({ items }) => {
             )
             .map(item => (
               <Link key={item.id} href={`/subscriptions/${item.id}`}>
-                <div className="transition-all cursor-pointer flex items-center text-slate-500 gap-4 p-2 text-sm rounded-lg hover:bg-slate-300">
+                <div
+                  className={`transition-all cursor-pointer flex items-center text-${
+                    item.active ? "amber" : "slate"
+                  }-500 gap-4 p-2 text-sm rounded-lg hover:bg-slate-300`}
+                >
                   <span className="material-icons text-sm">newspaper</span>
                   <span>{item.name || "unnamed"}</span>
                 </div>

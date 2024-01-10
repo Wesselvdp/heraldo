@@ -1,12 +1,13 @@
 "use client";
 import React, { FC } from "react";
-import { signOut } from "next-auth/react";
 
-type T = any;
+type T = {
+  logout: () => void;
+};
 
-const SignoutButton: FC<T> = props => {
+const SignoutButton: FC<T> = ({ logout }) => {
   return (
-    <div className="material-icons" onClick={() => signOut()}>
+    <div className="material-icons" onClick={() => logout()}>
       logout
     </div>
   );

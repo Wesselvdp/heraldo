@@ -6,6 +6,10 @@ type Subscription = {
   to: string;
   interest: string;
   id: string;
+  owner: string;
 };
 
-type Article = any;
+type Article = {
+  relevance: number;
+  [key: string]: string;
+};

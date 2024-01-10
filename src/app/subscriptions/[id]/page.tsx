@@ -1,7 +1,9 @@
+"use server";
 import React, { FC, useState } from "react";
 import AsideList from "@/components/AsideList";
 import { getSubscriptions, getSubscription } from "@/lib/db";
 import { updateSubscription } from "@/lib/db";
+import { notFound } from "next/navigation";
 
 import Layout from "@/components/Layout";
 import SubscriptionEditor from "@/components/SubscriptionEditor";
@@ -12,6 +14,8 @@ const Page = async ({ params }: { params: { id: string } }) => {
   const subscriptions = await getSubscriptions();
   const subscription = await getSubscription(params.id);
 
+  if (!subscription) return notFound();
+
   return (
     <Layout>
       <AsideList items={subscriptions as any} />
@@ -20,7 +24,10 @@ const Page = async ({ params }: { params: { id: string } }) => {
           <div className="p2 text-xl text-slate-600">
             Subscriptions / {subscription.name}
           </div>
-          <SubscriptionEditor isNew={false} subscription={subscription} />
+          <SubscriptionEditor
+            save={updateSubscription}
+            subscription={subscription}
+          />
         </div>
       </div>
     </Layout>
