@@ -21,7 +21,7 @@ const getRandomKeyword = () => {
   ];
 };
 
-const SubscriptionEditor: FC<T> = ({ subscription, save, onNameChange }) => {
+const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
   const { panelActions, setPanelRenderFunc } = useContext(MyContext);
   const [newKeyword, setNewKeyword] = useState<string>("");
   const [sub, setSub] = useState<Subscription>(
