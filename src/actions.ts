@@ -10,7 +10,8 @@ export async function login(token: string, model: AuthModel) {
       secure: true,
       path: "/",
       sameSite: "strict",
-      httpOnly: true
+      httpOnly: true,
+      expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7 * 365 * 10)
     });
 
     console.log({ cookieres });
