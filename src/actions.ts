@@ -5,15 +5,19 @@ import { cookies } from "next/headers";
 
 export async function login(token: string, model: AuthModel) {
   const cookie = JSON.stringify({ token, model });
+  try {
+    const cookieres = cookies().set("pb_auth", cookie, {
+      secure: true,
+      path: "/",
+      sameSite: "strict",
+      httpOnly: true
+    });
 
-  cookies().set("pb_auth", cookie, {
-    secure: true,
-    path: "/",
-    // sameSite: "strict",
-    httpOnly: true
-  });
-
-  redirect("/subscriptions");
+    console.log({ cookieres });
+    redirect("/subscriptions");
+  } catch (error) {
+    console.log({ cookieError: error });
+  }
 }
 
 export async function logout() {
