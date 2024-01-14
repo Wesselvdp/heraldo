@@ -3,7 +3,7 @@ import React, { FC } from "react";
 import { pb } from "@/lib/pb";
 import Button from "./Button";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 type T = {
   login: (token: any, model: any) => void;
 };
