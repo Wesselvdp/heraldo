@@ -10,9 +10,7 @@ const page: FC<T> = async props => {
   return (
     <Layout>
       <AsideList items={subscriptions as any} />
-      <div>
-        <TestServerCookie />
-      </div>
+      <div>{/* <TestServerCookie /> */}</div>
     </Layout>
   );
 };
