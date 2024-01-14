@@ -1,5 +1,5 @@
 "use server";
-import router from "next/navigation";
+
 import { pb } from "@/lib/pb";
 import { getUser } from "@/actions";
 
@@ -60,7 +60,6 @@ export const updateSubscription = async (data: Subscription) => {
     .collection("subscriptions")
     .update(data.id, data, options);
 
-  await router.refresh();
   return result;
 };
 export const addUsage = async (tokens: number) => {
