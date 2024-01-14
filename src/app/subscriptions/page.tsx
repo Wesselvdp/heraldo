@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { getSubscriptions } from "@/lib/db";
 import AsideList from "@/components/AsideList";
-import { TestServerCookie } from "@/components/TestServerCookie";
+
 import Layout from "@/components/Layout";
 
 type T = any;
