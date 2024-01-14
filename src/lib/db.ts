@@ -5,6 +5,7 @@ import { getUser } from "@/actions";
 
 const getOptions = async () => {
   const user = await getUser();
+  if (!user) throw new Error("No user");
   return {
     headers: {
       Authorization: "Bearer " + user.token

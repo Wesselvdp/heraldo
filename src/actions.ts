@@ -24,6 +24,7 @@ export async function logout() {
 
 export const getUser = async () => {
   const pb_auth_cookie = await cookies().get("pb_auth");
+  if (!pb_auth_cookie) return null;
   const parsed_cookie = JSON.parse(pb_auth_cookie?.value || "");
 
   return parsed_cookie as { token: string; model: AuthModel };
