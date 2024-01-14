@@ -9,7 +9,7 @@ export async function login(token: string, model: AuthModel) {
   cookies().set("pb_auth", cookie, {
     secure: true,
     path: "/",
-    sameSite: "strict",
+    // sameSite: "strict",
     httpOnly: true
   });
 
