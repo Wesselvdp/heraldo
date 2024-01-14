@@ -2,7 +2,6 @@
 import { redirect } from "next/navigation";
 import { AuthModel } from "pocketbase";
 import { cookies } from "next/headers";
-import { encodeNextPBCookie } from "@/lib/pbCookie";
 
 export async function login(token: string, model: AuthModel) {
   const cookie = JSON.stringify({ token, model });
@@ -24,7 +23,7 @@ export async function logout() {
 
 export const getUser = async () => {
   const pb_auth_cookie = await cookies().get("pb_auth");
-  if (!pb_auth_cookie) {
+  if (!pb_auth_cookie || !pb_auth_cookie.value) {
     console.log("nopb_auth_cookie");
     return;
   }
