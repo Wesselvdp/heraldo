@@ -24,6 +24,8 @@ const CredentialsForm: FC<T> = ({ login }) => {
           const { token, record: model } = await pb
             .collection("users")
             .authWithOAuth2({ provider: "google" });
+
+          console.log({ token, model });
           login(token, model);
         }}
       >

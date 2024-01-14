@@ -19,7 +19,7 @@ export const streamToString = async (stream: any) => {
 
   return Buffer.concat(chunks).toString("utf-8");
 };
-export const streamAsyncIterator = stream => {
+export const streamAsyncIterator = (stream: any) => {
   // Get a lock on the stream:
   const reader = stream.getReader();
 
