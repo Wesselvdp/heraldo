@@ -8,7 +8,7 @@ export async function login(token: string, model: AuthModel) {
   try {
     const cookieres = cookies().set("pb_auth", cookie, {
       secure: true,
-      path: "",
+      path: "/",
       domain: "chamonix.netlify.app/",
       sameSite: "lax",
       httpOnly: true,
