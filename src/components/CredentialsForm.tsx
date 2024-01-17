@@ -31,7 +31,11 @@ const CredentialsForm: FC<T> = ({ login }) => {
 
           // console.log({ token, model });
           // login(token, model);
-          login();
+          try {
+            login();
+          } catch (error) {
+            console.log({ clientError: error });
+          }
           // router.push("/subscriptions");
         }}
       >

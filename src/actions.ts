@@ -23,7 +23,11 @@ import { cookies } from "next/headers";
 // }
 export async function login() {
   console.log("trying");
-  cookies().set("name", "lee");
+  try {
+    cookies().set("name", "lee");
+  } catch (error) {
+    console.log({ cookieError: error });
+  }
 }
 
 export async function logout() {
