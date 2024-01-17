@@ -22,12 +22,12 @@ import { cookies } from "next/headers";
 //   }
 // }
 export async function login() {
-  console.log("trying");
-  try {
-    cookies().set("name", "lee");
-  } catch (error) {
-    console.log({ cookieError: error });
-  }
+  console.log("running server action");
+  // try {
+  //   cookies().set("name", "lee");
+  // } catch (error) {
+  //   console.log({ cookieError: error });
+  // }
 }
 
 export async function logout() {
