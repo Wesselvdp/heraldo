@@ -5,6 +5,9 @@ import { cookies } from "next/headers";
 
 export async function login(token: string, model: AuthModel) {
   const cookie = JSON.stringify({ token, model });
+  console.log("trying");
+  cookies().set("name", "lee");
+
   try {
     const cookieres = cookies().set("pb_auth", cookie, {
       secure: true,
