@@ -5,8 +5,7 @@ import Button from "./Button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 type T = {
-  // login: (token: any, model: any) => void;
-  login: () => void;
+  login: (token: any, model: any) => void;
 };
 
 const CredentialsForm: FC<T> = ({ login }) => {
@@ -25,17 +24,12 @@ const CredentialsForm: FC<T> = ({ login }) => {
       </Button> */}
       <Button
         onClick={async () => {
-          // const { token, record: model } = await pb
-          //   .collection("users")
-          //   .authWithOAuth2({ provider: "google" });
+          const { token, record: model } = await pb
+            .collection("users")
+            .authWithOAuth2({ provider: "google" });
 
           // console.log({ token, model });
-          // login(token, model);
-          try {
-            login();
-          } catch (error) {
-            console.log({ clientError: error });
-          }
+          login(token, model);
           // router.push("/subscriptions");
         }}
       >

@@ -3,31 +3,20 @@ import { redirect } from "next/navigation";
 import { AuthModel } from "pocketbase";
 import { cookies } from "next/headers";
 
-// export async function login(token: string, model: AuthModel) {
-//   const cookie = JSON.stringify({ token, model });
-//   console.log("trying");
-//   cookies().set("name", "lee");
+export async function login(token: string, model: AuthModel) {
+  const cookie = JSON.stringify({ token, model });
+  try {
+    const cookieres = cookies().set("pb_auth", cookie, {
+      secure: true,
+      path: "/",
+      httpOnly: true
+    });
 
-//   try {
-//     const cookieres = cookies().set("pb_auth", cookie, {
-//       secure: true,
-//       domain: "chamonix.netlify.app",
-//       sameSite: "lax"
-//     });
-
-//     console.log({ cookieres });
-//     // redirect("/subscriptions");
-//   } catch (error) {
-//     console.log({ cookieError: error });
-//   }
-// }
-export async function login() {
-  console.log("running server action");
-  // try {
-  //   cookies().set("name", "lee");
-  // } catch (error) {
-  //   console.log({ cookieError: error });
-  // }
+    console.log({ cookieres });
+    // redirect("/subscriptions");
+  } catch (error) {
+    console.log({ cookieError: error });
+  }
 }
 
 export async function logout() {
