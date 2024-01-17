@@ -14,7 +14,7 @@
     "js-tiktoken": "^1.0.8",
     "jwt-decode": "^4.0.0",
     "material-icons": "^1.13.12",
-    "next": "14.0.4",
+    "next": "13.4.9",
     "openai": "^4.24.1",
     "pocketbase": "^0.20.1",
     "prettier": "^3.1.1",
