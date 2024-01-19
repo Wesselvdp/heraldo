@@ -2,6 +2,8 @@
 import React, { FC, useState, useEffect } from "react";
 import Form from "./Form";
 import Button from "./Button";
+import { useRouter } from "next/navigation";
+import { isEqual } from "lodash";
 import Input from "./Input";
 import { updateSubscription, createSubscription } from "@/lib/db";
 import { useContext } from "react";
@@ -21,9 +23,23 @@ const getRandomKeyword = () => {
   ];
 };
 
+const useRandom = () => {
+  const [word, setWord] = useState<string>("");
+
+  useEffect(() => {
+    setWord(getRandomKeyword());
+  }, []);
+
+  return word;
+};
+
 const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
   const { panelActions, setPanelRenderFunc } = useContext(MyContext);
+  const [hasChanged, setHasChanged] = useState<boolean>(false);
+  const router = useRouter();
+
   const [newKeyword, setNewKeyword] = useState<string>("");
+  const randomWord = useRandom();
   const [sub, setSub] = useState<Subscription>(
     subscription || {
       query: [],
@@ -38,6 +54,28 @@ const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
   );
 
   useEffect(() => {
+    const keys: (keyof Subscription)[] = [
+      "query",
+      "interest",
+      "name",
+      "language",
+      "from",
+      "to"
+    ];
+
+    const allAreEqual = keys.every(key => {
+      if (!subscription || !sub[key]) return true;
+      const a = subscription[key];
+      const b = sub[key];
+
+      const isEqual = JSON.stringify(a) === JSON.stringify(b);
+
+      return isEqual;
+    });
+    setHasChanged(!allAreEqual);
+  }, [sub, subscription]);
+
+  useEffect(() => {
     save(sub);
   }, [subscription]);
 
@@ -48,7 +86,7 @@ const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
     });
 
   const onSave = (sub: Subscription) => save(sub);
-
+  console.log({ sub, subscription });
   return (
     <div className="">
       {/* <pre>{JSON.stringify(sub, null, 2)}</pre> */}
@@ -101,7 +139,7 @@ const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
               id="query"
               value={newKeyword}
               className="mr-3"
-              placeholder={`e.g. ${getRandomKeyword()}`}
+              placeholder={`e.g. ${randomWord}`}
               onChange={val => setNewKeyword(val)}
               onBlur={val => {
                 val &&
@@ -135,7 +173,7 @@ const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
           value={sub.interest}
           onChange={val => setSub({ ...sub, interest: val })}
         />
-        <Input
+        {/* <Input
           type="date"
           label="From date"
           id="from"
@@ -146,25 +184,27 @@ const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
           type="date"
           label="To date"
           id="to"
-          value={sub.to.slice(0, 10)}
+          value={sub.to.slice(0, 10) || "today"}
           onChange={val => setSub({ ...sub, to: val })}
-        />
+        /> */}
 
         <div className="text-right align-right">
           <Button
+            type="primary"
             onClick={e => {
               e.preventDefault();
               setPanelRenderFunc(() => () => <Form sub={sub} />);
               panelActions.open();
             }}
           >
-            Test
+            Analysis
           </Button>
-          {sub !== subscription && (
+          {hasChanged && (
             <Button
               onClick={e => {
                 e.preventDefault();
                 onSave(sub);
+                router.refresh();
               }}
             >
               Save

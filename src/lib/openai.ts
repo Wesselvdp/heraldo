@@ -1,5 +1,4 @@
 import axios from "axios";
-import OpenAI from "openai";
 import { streamAsyncIterator } from "./helpers";
 import { getEncoding, encodingForModel } from "js-tiktoken";
 
@@ -16,7 +15,7 @@ type Article = any;
 //   });
 // }
 
-export const getArticles = async (params: any) => {
+export const getArticles_old = async (params: any) => {
   if (!params.query) throw new Error("No query provided");
   console.log({ q: `q=${encodeURIComponent(params.query)}&` });
   const url =
@@ -28,6 +27,28 @@ export const getArticles = async (params: any) => {
     `apiKey=4f1451abd6014f3e848e9e1141fc3326`;
   const response = await axios.get(url);
   return response.data.articles as Article[];
+};
+
+export const getArticles = async ({ query }: { query: string[] }) => {
+  if (!query) throw new Error("No query provided");
+  const response = await fetch("/api/news", {
+    method: "POST",
+    body: JSON.stringify({ query })
+  });
+
+  const data = await response.json();
+
+  console.log({ data });
+
+  return data;
+  // console.log({ q: `q=${encodeURIComponent(params.query)}&` });
+  // const url =
+  //   "https://newsdata.io/api/1/news?" +
+  //   `q=${encodeURIComponent(params.query)}&` +
+  //   // `language=${params.language}&` +
+  //   `apikey=pub_36600f5cdce6e3f0b2d1dbec5f3ef8c734939`;
+  // const response = await axios.get(url);
+  // return response.data.results as Article[];
 };
 
 export const summarizeArticles = async (
@@ -64,14 +85,14 @@ export const markRelevance = async (articles: Article[], interest: string) => {
   const articlesShort = articles.map((article, i) => ({
     title: article.title,
     // description: article.description,
-    url: article.url
+    article_id: article.article_id
   }));
 
-  // console.log({ interest, articlesShort });
+  console.log({ interest, articlesShort });
 
   const example = [
     {
-      url: "https://www.nature.com/articles/s41586-021-03594-0",
+      article_id: "0a791882387b9e719138e96f9691ff62",
       reason:
         "The title indicates the article talks about technological advancements in the production of solar panels.",
       relevance: 4,
@@ -93,7 +114,7 @@ export const markRelevance = async (articles: Article[], interest: string) => {
     
     Here are the instructions for each article
     1. Mark the article's relevance to the topic of interest by marking it 1 to 4. 1 being not relevant and 4 being highly relevant.
-    2. We only care about highly relevant articles, so id you mark an article below 4, remove it from the list.
+    2. We only care about articles with a relevance score of 3 or 4, so if you mark an article 1 or 2, we will not use it and you can throw it away
     3. Explain in 1 sentence the reason you gave the relevance score 
     4. Keep the url field
     When you've looped over all the articles, return the shortened JSON list.

@@ -2,10 +2,15 @@
 
 import { pb } from "@/lib/pb";
 import { getUser } from "@/actions";
+import { redirect } from "next/navigation";
 
 const getOptions = async () => {
   const user = await getUser();
-  if (!user) return {};
+  if (!user) {
+    console.log("no user");
+    redirect("/");
+    return;
+  }
   return {
     headers: {
       Authorization: "Bearer " + user.token
@@ -30,8 +35,6 @@ export const getSubscription = async (id: string) => {
     return null;
   }
 };
-
-// @request.auth.id != "" && owner = @request.auth.id
 
 export const createSubscription = async (newSubscription: Subscription) => {
   // There is duplication in the user and the options flow, both sorta do the same

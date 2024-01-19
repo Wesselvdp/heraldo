@@ -13,7 +13,6 @@ export async function login(token: string, model: AuthModel) {
     });
 
     console.log({ cookieres });
-    // redirect("/subscriptions");
   } catch (error) {
     console.log({ cookieError: error });
   }
@@ -21,7 +20,6 @@ export async function login(token: string, model: AuthModel) {
 
 export async function logout() {
   cookies().delete("pb_auth");
-  redirect("/");
 }
 
 export const getUser = async () => {

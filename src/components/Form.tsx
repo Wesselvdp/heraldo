@@ -1,7 +1,6 @@
 "use client";
 import React, { FC, useEffect } from "react";
 import { getArticles, markRelevance, summarizeArticles } from "../lib/openai";
-import OpenAI from "openai";
 import Button from "./Button";
 type T = {
   sub: Subscription;
@@ -60,13 +59,17 @@ const form: FC<T> = ({ sub }) => {
       const relevant = JSON.parse(JSON.parse(response));
       console.log({ relevant });
 
-      const relevantArticleUrls = relevant.map((article: any) => article.url);
+      const relevantArticleIds = relevant.map(
+        (article: any) => article.article_id
+      );
+
+      console.log({ relevantArticleIds });
 
       const newRelevantArticles = articlesResponse.flatMap(article => {
-        if (!relevantArticleUrls.includes(article.url)) return [];
+        if (!relevantArticleIds.includes(article.article_id)) return [];
         return {
           ...article,
-          ...relevant.find((a: any) => a.url === article.url)
+          ...relevant.find((a: any) => a.article_id === article.article_id)
         };
       });
 
@@ -139,25 +142,48 @@ const form: FC<T> = ({ sub }) => {
             </p>
           </div>
           {/* Articles */}
-          <div className="bg-white p-4 rounded text-slate-700 mb-4 relative">
+          <div className=" p-4 rounded text-slate-700 mb-4 relative">
             <p className="bold text-lg">
               {relevantArticles.length} relevant articles:
             </p>
             {relevantArticles.map((article: Article, i) => (
-              <a key={i} href={article.url}>
-                <div className="flex gap-4 border-b-2 border-slate-300 mb-5 py-4">
-                  <div className="flex-1">
-                    <img
+              <a key={i} href={article.link} target="_blank">
+                <div className=" bg-white flex gap-4 border-2 overflow-hidden rounded-lg border-slate-100 p-1 pr-4 mb-5 ">
+                  <div
+                    style={{
+                      backgroundImage: `url('${article.image_url}')`
+                    }}
+                    className={`flex-1 bg-cover rounded-md`}
+                  >
+                    {/* <img
                       className="max-w-full rounded"
-                      src={article.urlToImage}
-                    />
+                      src={article.image_url}
+                    /> */}
                   </div>
                   <div className="flex-[2]">
-                    <h2 className="font-bold">{article.title}</h2>
-                    <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                      {relevancy[article.relevance]}
+                    <span className="text-xs bold">
+                      {article.pubDate.slice(0, 10)}
                     </span>
-                    <p>{article.reason}</p>
+                    <h2 className="font-bold mb-2">{article.title}</h2>
+                    <hr />
+
+                    <div className=" rounded-md py-1 text-xs font-medium text-gray-600 ">
+                      <span className="font-bold mb-2">
+                        {relevancy[article.relevance]}:
+                      </span>
+                      <span> {article.reason}</span>
+                    </div>
+                    <hr />
+
+                    <div className="text-right">
+                      <a
+                        className="text-xs text-underline text-black hover:text-slate-700"
+                        href={article.link}
+                        target="_blank"
+                      >
+                        Read --{">"}
+                      </a>
+                    </div>
 
                     {/* <p>{article.description}</p> */}
                   </div>

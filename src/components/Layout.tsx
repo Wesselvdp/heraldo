@@ -5,6 +5,8 @@ import SignoutButton from "./SignoutButton";
 import SidePanel from "./SidePanel";
 import MainBody from "./MainBody";
 import { logout } from "@/actions";
+import NavItem from "./NavItem";
+
 type T = any;
 
 const Layout: FC<T> = props => {
@@ -18,10 +20,10 @@ const Layout: FC<T> = props => {
         </div>
         <nav>
           <Link href={"/subscriptions"}>
-            <div className="flex transition-all p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
-              <span className="material-icons">newspaper</span>
-            </div>
+            <NavItem icon="newspaper" tooltip="Subscriptions" />
           </Link>
+
+          <NavItem icon="medical_services" tooltip="Med search coming soon" />
         </nav>
         <div className=" mt-auto flex p-2 rounded-lg hover:bg-slate-100 cursor-pointer">
           <SignoutButton logout={logout} />

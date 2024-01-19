@@ -18,6 +18,7 @@ export async function POST(req: Request, res: NextApiResponse) {
     const stream = await openai.chat.completions.create({
       model: "gpt-4",
       stream: true,
+      temperature: 0.4,
       messages: [{ role: "user", content: prompt }]
     });
 

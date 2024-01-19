@@ -35,8 +35,8 @@ const AsideList: FC<T> = ({ items }) => {
             .filter(item =>
               item.name.toLowerCase().includes(search.toLowerCase())
             )
-            .map(item => (
-              <Link key={item.id} href={`/subscriptions/${item.id}`}>
+            .map((item, i) => (
+              <Link key={item.id || i} href={`/subscriptions/${item.id}`}>
                 <div
                   className={`transition-all cursor-pointer flex items-center text-${
                     item.active ? "amber" : "slate"
@@ -48,7 +48,7 @@ const AsideList: FC<T> = ({ items }) => {
               </Link>
             ))}
         </div>
-        <Button block={true}>
+        <Button block={true} className="mx-0">
           <Link href="/subscriptions/create">+ New subscription</Link>
         </Button>
       </div>
