@@ -48,9 +48,11 @@ const AsideList: FC<T> = ({ items }) => {
               </Link>
             ))}
         </div>
-        <Button block={true} className="mx-0">
-          <Link href="/subscriptions/create">+ New subscription</Link>
-        </Button>
+        <Link href="/subscriptions/create">
+          <Button block={true} className="mx-0">
+            + New subscription
+          </Button>
+        </Link>
       </div>
     </div>
   );
