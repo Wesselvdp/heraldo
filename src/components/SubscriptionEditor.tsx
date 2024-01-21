@@ -195,6 +195,7 @@ const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
             type="primary"
             onClick={e => {
               e.preventDefault();
+              onSave(sub);
               setPanelRenderFunc(() => () => <Form sub={sub} />);
               panelActions.open();
             }}
