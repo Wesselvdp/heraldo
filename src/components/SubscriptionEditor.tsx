@@ -63,8 +63,10 @@ const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
       "to"
     ];
 
+    if (!subscription) return setHasChanged(true);
+
     const allAreEqual = keys.every(key => {
-      if (!subscription || !sub[key]) return true;
+      if (!sub[key]) return true;
       const a = subscription[key];
       const b = sub[key];
 
