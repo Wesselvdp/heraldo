@@ -14,7 +14,7 @@ export async function POST(req: Request, res: NextApiResponse) {
     // `language=${params.language}&` +
     `apikey=${apiKey}`;
   const response = await axios.get(url);
-  console.log({ response });
+
   const articles = response.data.results as Article[];
   return NextResponse.json(articles);
 }
