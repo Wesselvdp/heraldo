@@ -1,5 +1,7 @@
 "use client";
 import React, { FC, useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
+
 import { getArticles, markRelevance, summarizeArticles } from "../lib/openai";
 import Button from "./Button";
 type T = {
@@ -67,9 +69,14 @@ const form: FC<T> = ({ sub }) => {
 
       const newRelevantArticles = articlesResponse.flatMap(article => {
         if (!relevantArticleIds.includes(article.article_id)) return [];
+        const relevancyData = relevant.find(
+          (a: any) => a.article_id === article.article_id
+        );
+        console.log({ relevancyData });
+        if (relevancyData.relevance < 3) return [];
         return {
           ...article,
-          ...relevant.find((a: any) => a.article_id === article.article_id)
+          ...relevancyData
         };
       });
 
@@ -110,11 +117,14 @@ const form: FC<T> = ({ sub }) => {
         `test-${sub.id}`,
         JSON.stringify({
           relevantArticles: newRelevantArticles,
-          summary: summ
+          summary: summ,
+          updated: sub.updated
         })
       );
     } catch (error) {
       setStep("Oops, something went wrong. ");
+      Sentry.captureException(error);
+
       console.log({ error });
       setStatus(Status.ERROR);
     }
@@ -122,6 +132,11 @@ const form: FC<T> = ({ sub }) => {
 
   useEffect(() => {
     if (!Object.keys(testResultInLocalStorage).length) summarize();
+    // if (sub.updated && testResultInLocalStorage.updated) {
+    //   const subUpdated = new Date(sub.updated).getTime();
+    //   const localUpdated = new Date(testResultInLocalStorage.updated).getTime();
+    //   if (subUpdated > localUpdated) summarize();
+    // }
   }, []);
 
   return (

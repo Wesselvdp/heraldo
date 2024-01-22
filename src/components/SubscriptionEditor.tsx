@@ -87,7 +87,11 @@ const SubscriptionEditor: FC<T> = ({ subscription, save }) => {
       query: sub.query.flatMap((el, index) => (i === index ? [] : el))
     });
 
-  const onSave = (sub: Subscription) => save(sub);
+  const onSave = (sub: Subscription) => {
+    // Remobe the analysis from localstorage if the subscription has changed
+    if (hasChanged) localStorage.removeItem(`test-${sub.id}`);
+    save(sub);
+  };
   console.log({ sub, subscription });
   return (
     <div className="">

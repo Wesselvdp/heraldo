@@ -7,6 +7,7 @@ type Subscription = {
   interest: string;
   id: string;
   owner: string;
+  updated?: string;
 };
 
 type Article = {
