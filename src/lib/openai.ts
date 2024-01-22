@@ -17,7 +17,7 @@ type Article = any;
 
 export const getArticles_old = async (params: any) => {
   if (!params.query) throw new Error("No query provided");
-  console.log({ q: `q=${encodeURIComponent(params.query)}&` });
+
   const url =
     "https://newsapi.org/v2/everything?" +
     `q=${encodeURIComponent(params.query)}&` +
@@ -37,8 +37,6 @@ export const getArticles = async ({ query }: { query: string[] }) => {
   });
 
   const data = await response.json();
-
-  console.log({ data });
 
   return data;
   // console.log({ q: `q=${encodeURIComponent(params.query)}&` });
@@ -87,8 +85,6 @@ export const markRelevance = async (articles: Article[], interest: string) => {
     // description: article.description,
     article_id: article.article_id
   }));
-
-  console.log({ interest, articlesShort });
 
   const example = [
     {
