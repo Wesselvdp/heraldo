@@ -19,7 +19,7 @@ type Article = any;
 
 export const getArticles_old = async (params: any) => {
   if (!params.query) throw new Error("No query provided");
-  console.log({ q: `q=${encodeURIComponent(params.query)}&` });
+
   const url =
     "https://newsapi.org/v2/everything?" +
     `q=${encodeURIComponent(params.query)}&` +
