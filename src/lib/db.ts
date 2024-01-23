@@ -23,6 +23,11 @@ export const getSubscriptions = async () => {
   const result = await pb.collection("subscriptions").getList(1, 20, options);
   return result.items;
 };
+export const getMeds = async () => {
+  const options = await getOptions();
+  const result = await pb.collection("medical").getList(1, 20, options);
+  return result.items;
+};
 
 export const getSubscription = async (id: string) => {
   const options = await getOptions();
