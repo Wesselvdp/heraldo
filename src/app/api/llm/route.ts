@@ -13,29 +13,34 @@ export const runtime = "edge";
 
 export async function POST(req: Request, res: NextApiResponse) {
   const { prompt, shouldStream } = await req.json();
-  console.log({ shouldStream });
-  if (shouldStream) {
-    const stream = await openai.chat.completions.create({
-      model: "gpt-4",
-      stream: true,
-      temperature: 0.4,
-      messages: [{ role: "user", content: prompt }]
-    });
 
-    const aiStream = OpenAIStream(stream);
-    return new StreamingTextResponse(aiStream);
-  }
+  try {
+    if (shouldStream) {
+      const stream = await openai.chat.completions.create({
+        model: "gpt-4",
+        stream: true,
+        temperature: 0.4,
+        messages: [{ role: "user", content: prompt }]
+      });
 
-  if (!shouldStream) {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }]
-    });
-    console.log({ response });
-    const totalTokens = response.usage?.total_tokens;
-    if (totalTokens && typeof totalTokens === "number") addUsage(totalTokens);
-    console.log({ noStreamResponse: response.usage?.total_tokens });
-    const content = response.choices[0].message.content;
-    return NextResponse.json(content);
+      const aiStream = OpenAIStream(stream);
+      return new StreamingTextResponse(aiStream);
+    }
+
+    if (!shouldStream) {
+      const response = await openai.chat.completions.create({
+        model: "gpt-4",
+        messages: [{ role: "user", content: prompt }]
+      });
+
+      const totalTokens = response.usage?.total_tokens;
+      if (totalTokens && typeof totalTokens === "number") addUsage(totalTokens);
+
+      const content = response.choices[0].message.content;
+      return NextResponse.json(content);
+    }
+  } catch (error) {
+    console.log(error);
+    return NextResponse.json({ error });
   }
 }
