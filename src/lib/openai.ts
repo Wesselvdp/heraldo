@@ -1,6 +1,8 @@
 import axios from "axios";
 import { streamAsyncIterator } from "./helpers";
 import { getEncoding, encodingForModel } from "js-tiktoken";
+import { slate } from "tailwindcss/colors";
+import { addUsage } from "./db";
 
 const {} = process.env;
 
@@ -66,12 +68,8 @@ export const summarizeArticles = async (
     
     Please summarize the articles keeping the theme of interest in mind and return the summary
 `;
-  const response = await fetch("/api/llm", {
-    method: "POST",
-    body: JSON.stringify({ prompt, shouldStream: true })
-  });
-
-  return response.body;
+  const resp = await axios.post("/api/llm", { prompt });
+  return resp.data.answer;
 };
 
 export const markRelevance = async (articles: Article[], interest: string) => {
@@ -87,8 +85,6 @@ export const markRelevance = async (articles: Article[], interest: string) => {
     // description: article.description,
     article_id: article.article_id
   }));
-
-  console.log({ interest, articlesShort });
 
   const example = [
     {
@@ -124,24 +120,17 @@ export const markRelevance = async (articles: Article[], interest: string) => {
     Here is a response example: ${JSON.stringify(example)}
 	`;
 
-  const response = await fetch("/api/llm", {
-    method: "POST",
-    body: JSON.stringify({ prompt, shouldStream: false })
-  });
+  const resp = await axios.post("/api/llm", { prompt, shouldStream: true });
+  return JSON.parse(resp.data.answer);
 
-  const model = "gpt-4";
-  const enc = encodingForModel(model); // js-tiktoken
-  let completionTokens = 0;
-  let str = "";
+  // for await (const chunk of streamAsyncIterator(response.body)) {
+  //   const content = new TextDecoder().decode(chunk);
+  //   str = str + content;
+  //   const tokenList = enc.encode(content);
+  //   completionTokens += tokenList.length;
+  // }
 
-  for await (const chunk of streamAsyncIterator(response.body)) {
-    const content = new TextDecoder().decode(chunk);
-    str = str + content;
-    const tokenList = enc.encode(content);
-    completionTokens += tokenList.length;
-  }
+  // console.log(`Completion token usage: ${completionTokens}`);
 
-  console.log(`Completion token usage: ${completionTokens}`);
-
-  return str;
+  // return str;
 };
