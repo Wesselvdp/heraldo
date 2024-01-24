@@ -1,15 +1,14 @@
 // import { getArticles } from "./openai";
+import axios from "axios";
 import { getArticles } from "./pubmedArticle";
 import parser from "xml-js";
 const pubmed = {
   search: async (query: string) => {
     const url = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=${query}&retmode=json`;
 
-    const res = await fetch(url, {
-      method: "GET"
-    });
+    const res = await axios.get(url);
 
-    return res.json();
+    return res.data;
   },
 
   getRawArticles: async (ids: string[] | string) => {

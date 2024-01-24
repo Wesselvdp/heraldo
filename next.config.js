@@ -8,7 +8,6 @@ const nextConfig = {
 
 module.exports = nextConfig;
 
-
 // Injected content via Sentry wizard below
 
 const { withSentryConfig } = require("@sentry/nextjs");
@@ -22,7 +21,7 @@ module.exports = withSentryConfig(
     // Suppresses source map uploading logs during build
     silent: true,
     org: "torgonio",
-    project: "javascript-nextjs",
+    project: "javascript-nextjs"
   },
   {
     // For all available options, see:
@@ -47,6 +46,6 @@ module.exports = withSentryConfig(
     // See the following for more information:
     // https://docs.sentry.io/product/crons/
     // https://vercel.com/docs/cron-jobs
-    automaticVercelMonitors: true,
+    automaticVercelMonitors: true
   }
 );

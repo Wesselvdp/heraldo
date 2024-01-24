@@ -1,10 +1,10 @@
 import axios from "axios";
 import { streamAsyncIterator } from "./helpers";
 import { getEncoding, encodingForModel } from "js-tiktoken";
-import { slate } from "tailwindcss/colors";
 import { addUsage } from "./db";
 
-const {} = process.env;
+const { NEXT_PUBLIC_SERVER_HOST } = process.env;
+const serverUrl = `${NEXT_PUBLIC_SERVER_HOST}`;
 
 type Article = any;
 
@@ -40,6 +40,8 @@ export const getArticles = async ({ query }: { query: string[] }) => {
 
   const data = await response.json();
 
+  console.log({ data });
+
   return data;
   // console.log({ q: `q=${encodeURIComponent(params.query)}&` });
   // const url =
@@ -55,7 +57,14 @@ export const summarizeArticles = async (
   articles: Article[],
   interest: string
 ) => {
-  const relevantArticles = articles.filter(r => r.relevance > 2);
+  const relevantArticles = articles.flatMap(ar => {
+    if (ar.relevance > 2) return [];
+    return {
+      description: ar.description,
+      title: ar.title,
+      country: ar.country
+    };
+  });
 
   const prompt = `
     You are a helping researchers with the distilation of information on a topic of interest.
@@ -66,8 +75,13 @@ export const summarizeArticles = async (
     
     Please summarize the articles keeping the theme of interest in mind and return the summary
 `;
-  const resp = await axios.post("/api/llm", { prompt });
-  return resp.data.answer;
+  const response = await axios.post(`${serverUrl}/llm`, {
+    prompt,
+    shouldStream: true
+  });
+
+  const { usage, answer } = response.data;
+  return answer;
 };
 
 export const markRelevance = async (articles: Article[], interest: string) => {
@@ -118,8 +132,14 @@ export const markRelevance = async (articles: Article[], interest: string) => {
     Here is a response example: ${JSON.stringify(example)}
 	`;
 
-  const resp = await axios.post("/api/llm", { prompt, shouldStream: true });
-  return JSON.parse(resp.data.answer);
+  const response = await axios.post(`${serverUrl}/llm`, {
+    prompt,
+    shouldStream: true
+  });
+
+  const { usage, answer } = response.data;
+  // addUsage(usage);
+  return JSON.parse(answer);
 
   // for await (const chunk of streamAsyncIterator(response.body)) {
   //   const content = new TextDecoder().decode(chunk);
