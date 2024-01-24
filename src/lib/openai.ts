@@ -4,7 +4,9 @@ import { getEncoding, encodingForModel } from "js-tiktoken";
 import { addUsage } from "./db";
 
 const { NEXT_PUBLIC_SERVER_HOST } = process.env;
-const serverUrl = `${NEXT_PUBLIC_SERVER_HOST}`;
+const serverUrl = NEXT_PUBLIC_SERVER_HOST || "http://127.0.0.1:8080";
+
+console.log({ serverUrl });
 
 type Article = any;
 
@@ -58,7 +60,7 @@ export const summarizeArticles = async (
   interest: string
 ) => {
   const relevantArticles = articles.flatMap(ar => {
-    if (ar.relevance > 2) return [];
+    if (ar.relevance < 2) return [];
     return {
       description: ar.description,
       title: ar.title,
