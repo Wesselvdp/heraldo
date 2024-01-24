@@ -53,32 +53,35 @@ const form: FC<T> = ({ sub }) => {
       }
       setStep("Weeding out the nonsense");
 
-      const response = await markRelevance(articlesResponse, sub.interest);
-      console.log({ response });
-
-      if (!response) return;
-
-      const relevant = JSON.parse(JSON.parse(response));
-      console.log({ relevant });
+      const relevant = await markRelevance(articlesResponse, sub.interest);
+      if (!relevant) return;
 
       const relevantArticleIds = relevant.map(
         (article: any) => article.article_id
       );
 
-      console.log({ relevantArticleIds });
+      console.log({ articlesResponse, relevantArticleIds, relevant });
 
       const newRelevantArticles = articlesResponse.flatMap(article => {
-        if (!relevantArticleIds.includes(article.article_id)) return [];
+        if (!relevantArticleIds.includes(article.article_id)) {
+          console.log("1", { id: article.article_id, relevantArticleIds });
+          return [];
+        }
         const relevancyData = relevant.find(
           (a: any) => a.article_id === article.article_id
         );
         console.log({ relevancyData });
-        if (relevancyData.relevance < 3) return [];
+        if (relevancyData.relevance < 3) {
+          console.log("2");
+          return [];
+        }
         return {
           ...article,
           ...relevancyData
         };
       });
+
+      console.log({ newRelevantArticles });
 
       const sortedRelevantArticles = newRelevantArticles.sort((a, b) =>
         a.relevance - b.relevance < 0 ? 1 : -1
@@ -93,31 +96,34 @@ const form: FC<T> = ({ sub }) => {
       }
       setStep("Speedreading articles");
 
-      const summaryResponseStream = await summarizeArticles(
+      const summaryResponse = await summarizeArticles(
         sortedRelevantArticles,
         sub.interest
       );
-      var dec = new TextDecoder("utf-8");
+      console.log({ summaryResponse });
+      setSummary(summaryResponse);
+
+      // var dec = new TextDecoder("utf-8");
       setStatus(Status.DONE);
 
-      const reader = summaryResponseStream?.getReader();
-      if (!reader) return;
-      let summ = "";
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) {
-          break;
-        }
-        const newStr = dec.decode(value);
-        setSummary((prevData: string) => prevData + newStr);
-        summ += newStr;
-      }
+      // const reader = summaryResponseStream?.getReader();
+      // if (!reader) return;
+      // let summ = "";
+      // while (true) {
+      //   const { done, value } = await reader.read();
+      //   if (done) {
+      //     break;
+      //   }
+      //   const newStr = dec.decode(value);
+      //   setSummary((prevData: string) => prevData + newStr);
+      //   summ += newStr;
+      // }
 
       localStorage.setItem(
         `test-${sub.id}`,
         JSON.stringify({
           relevantArticles: newRelevantArticles,
-          summary: summ,
+          summary: summaryResponse,
           updated: sub.updated
         })
       );

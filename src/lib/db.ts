@@ -72,10 +72,10 @@ export const updateSubscription = async (data: Subscription) => {
   return result;
 };
 export const addUsage = async (tokens: number) => {
-  console.log({ addingUsage: tokens });
   const options = await getOptions();
   const userData = await getUser();
   const user = userData?.model?.id;
+  console.log({ addingUsage: tokens, user });
   const result = await pb.collection("users").update(
     user,
     { usage: tokens },
